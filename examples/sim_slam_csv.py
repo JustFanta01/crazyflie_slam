@@ -24,7 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     # Leggi il file CSV
-    file_path = '/home/LABS/s0001140577/large/lab8-CustomCommunication/crazyflie_log.csv' 
+    file_path = '../crazyflie_log.csv'
 
     # Use genfromtxt to read the CSV in a NumPy array
     data_frame = pd.read_csv(file_path)
