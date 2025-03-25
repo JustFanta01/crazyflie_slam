@@ -5,10 +5,30 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crtp import init_drivers
 from cflib.utils.callbacks import Caller
 
+import csv
+
 # URI of the Crazyflie (update this based on your setup)
 uri = 'radio://0/83/2M/E7E7E7E7EA'
 
 # "Optical Flow Data\x00\x00\x00\x00\x00"\xa1\xff\x1f"
+
+# filename
+log_file = 'crazyflie_log.csv'
+
+# header logfile
+header = ['id', 'front', 'right', 'back', 'left', 'x', 'y', 'yaw']
+log_id = 0
+
+
+def log_data(data):
+    global log_id
+    data = [log_id, *data]
+    log_id += 1
+
+    # print(data)
+    with open(log_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
 
 # Custom CRTP port (matches the firmware port)
 CUSTOM_CTRP_PORT = 0x09
@@ -19,16 +39,10 @@ def custom_sensor_data_handler(packet):
     """
     # The packet is a byte array, so we need to unpack the data
     # The format string is defined based on the packet structure in the firmware: 
-    #   - yaw (float), 
-    #   - x (float),
-    #   - y (float),
-    #   - front (uint16),
-    #   - back (uint16), 
-    #   - left (uint16),
-    #   - right (uint16),
-    #   - up (uint16),
-    #   - padding1 (1byte), padding2 (1byte)
+    # a message (10 bytes), deltaX (2 bytes), deltaY (2 bytes), and squal (1 byte) and padding (1 byte)
     # Here is the format string: https://docs.python.org/3/library/struct.html
+    
+    # format_string = "10s hh B h"
     format_string = "f f f H H H H H bb"
 
     print(len(packet))
@@ -36,14 +50,20 @@ def custom_sensor_data_handler(packet):
 
     if len(packet) == (struct.calcsize(format_string)):
         # Unpack the data from the packet
+        # msg, deltaX, deltaY, squal, shutter = struct.unpack(format_string, packet)
         yaw, x, y, front, back, left, right, up, padding1, padding2 = struct.unpack(format_string, packet)
+
+        data = [front, right, back, left, x, y, yaw]
+        log_data(data)
 
         # If you want to keep the raw packet, use the following line
         # print(f"Raw packet: {packet}")
         
         # Print the unpacked values
         # print(f"Message: {msg_decoded}")
-        print(f"Received - yaw: {yaw}, front: {front}")
+        # print(f"Received - deltaX: {deltaX}, deltaY: {deltaY}, squal: {squal}, shutter: {shutter}")
+
+        print(f"Received - yaw: {yaw}, front: {front}, x: {x}")
     else:
         print(f"Received unknown packet: {packet.decode('utf-8', errors='ignore')}")
         print(f"Raw packet: {packet}")
@@ -67,6 +87,11 @@ if __name__ == '__main__':
     # - The crazyflie class already a appchannel instance, so we can directly use it to register the callback.
 
     cf.appchannel.packet_received.add_callback(custom_sensor_data_handler)
+
+    # Creating the log file and writing the header
+    with open(log_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
 
     # Connect to the Crazyflie
     cf.open_link(uri)
