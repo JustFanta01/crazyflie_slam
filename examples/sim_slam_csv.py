@@ -24,8 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     # Leggi il file CSV
-    file_path = '...'
-
+    file_path = '../../CPS/dataset CF 38x80,5cm/crazyflie_log_perimetro.csv'
     # Use genfromtxt to read the CSV in a NumPy array
     data_frame = pd.read_csv(file_path)
 
@@ -75,31 +74,35 @@ if __name__ == '__main__':
     )
 
     # Main loop
+    plt.ion()
+    
+    # TODO: find a way to intecept CTRL+C on the plot
+
+    fig = plt.figure(figsize=(7,7))
     for t in range(states.shape[1]):
         slam_states[:, t]  = slam_agent.update_state(
             ranges[:, t],
-            scanangles,
+            scan_angles,
             motion_updates[:, t], # un lista di delta nelle posizioni
         )
 
-        # if t % 50 == 0:
-        #     slam_map = slam_agent.map
-        #     idx_slam = discretize(slam_states[:2, :], slam_agent.params)
-        #     idx_noise = discretize(states[:2, :], slam_agent.params)
-
-        #     plt.figure(figsize=(11, 11))
-        #     plt.imshow(slam_map, cmap="gray")
-        #     plt.plot(idx_slam[1, :], idx_slam[0, :], "-r", label="slam")
-        #     plt.legend()
-        #     plt.show()
+        plt.clf()
+        slam_map = slam_agent.map
+        idx_slam = discretize(slam_states[:2, :], slam_agent.params)
+        idx_noise = discretize(states[:2, :], slam_agent.params)
 
 
-    slam_map = slam_agent.map
-    idx_slam = discretize(slam_states[:2, :], slam_agent.params)
-    idx_noise = discretize(states[:2, :], slam_agent.params)
+        plt.imshow(slam_map, cmap="gray") # vmin=-50, vmax=100)
+        plt.plot(idx_slam[1, :t+1], idx_slam[0, :t+1], "-r", label="slam")
+        plt.title(f"Iterazione #{t}")
+        plt.legend()
+        plt.draw()
+        plt.pause(0.01)
 
-    plt.figure(figsize=(11, 11))
-    plt.imshow(slam_map, cmap="gray")
-    plt.plot(idx_slam[1, :], idx_slam[0, :], "-r", label="slam")
-    plt.legend()
-    plt.show()
+
+plt.ioff()
+plt.imshow(slam_map, cmap="gray")
+plt.plot(idx_slam[1, :], idx_slam[0, :], "-r", label="slam")
+plt.title(f"Final map")
+plt.legend()
+plt.show()

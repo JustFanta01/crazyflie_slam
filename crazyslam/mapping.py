@@ -164,12 +164,12 @@ def update_grid_map(grid, ranges, angles, state, params):
 
     # compute the measured position
     targets = target_cell(state, ranges, angles)
-    print(f"targets[0] (x): {targets[0]}")
-    print(f"targets[1] (y): {targets[1]}")
+    # print(f"targets[0] (x): {targets[0]}")
+    # print(f"targets[1] (y): {targets[1]}")
 
     targets = discretize(targets, params)
-    print(f"targets[0] (u): {targets[0]}")
-    print(f"targets[1] (v): {targets[1]}")
+    # print(f"targets[0] (u): {targets[0]}")
+    # print(f"targets[1] (v): {targets[1]}")
 
     # find the affected cells
     position = discretize(state[:2], params)
