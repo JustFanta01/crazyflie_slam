@@ -37,26 +37,17 @@ if __name__ == '__main__':
     left = data_frame['left'] / 1000
     x = data_frame['x']
     y = data_frame['y']
-    yaw = data_frame['yaw'] 
+    yaw = data_frame['yaw'] * np.pi / 180.0
 
     # Create "ranges" that contains front, right, back and left
     ranges = np.array([front, right, back, left])
 
     # Create "scanangles" that contains 0, 90, 180, 270
-    scanangles = np.array([0, 90, 180, 270]).T
+    scan_angles = np.array([0, 1/2*np.pi, np.pi, 3/2*np.pi]).T
 
     # Create "scanangles" that contains x, y and yaw
     states = np.array([x, y, yaw])
     # print("states[:, 0:5] (normale)", states[:, 0:5])
-# slam_map = slam_agent.map
-    # idx_slam = discretize(slam_states[:2, :], slam_agent.params)
-    # idx_noise = discretize(states[:2, :], slam_agent.params)
-
-    # plt.figure(figsize=(11, 11))
-    # plt.imshow(slam_map, cmap="gray")
-    # plt.plot(idx_slam[1, :], idx_slam[0, :], "-r", label="slam")
-    # plt.legend()
-    # plt.show()
 
     # Get Delta of the states 
     motion_updates = np.diff(states, axis=1, prepend=np.zeros((3, 1)))
