@@ -76,10 +76,8 @@ def discretize(position, params):
     assert position.shape[0] == 2, \
         "Error: Position vector shape should be (2, n)"
     idx = np.stack((
-        ((position[0]) * params["resolution"]).astype("int")
-        + params["origin"][0],
-        ((position[1]) * params["resolution"]).astype("int")
-        + params["origin"][1],
+        ((position[0]) * params["resolution"]).astype("int") + params["origin"][0],
+        ((position[1]) * params["resolution"]).astype("int") + params["origin"][1],
     )).astype(np.int16)
     return np.clip(idx, a_max=params["resolution"]*params["size"]-1, a_min=0)
 
@@ -110,9 +108,8 @@ def target_cell(states, sensor_range, sensor_bearing):
     
     sensor_bearing = sensor_bearing.reshape((-1, 1))
     
-    # [ x,y,yaw ]
+    # [ x, y, yaw ]
     states = states.reshape((3, -1))
-
     
     x = (sensor_range * np.cos(states[2, :]+sensor_bearing)) + states[0, :]
     x = x.reshape((1, n_target_cells, n_particles))
@@ -122,7 +119,10 @@ def target_cell(states, sensor_range, sensor_bearing):
         x,
         y,
     ), axis=0)
-    return res.squeeze()
+    res = res.squeeze()
+    # print(f"states[:2]: {states[:2]}")
+    # print(f"res[:2]: {res[:2]}")
+    return res
 
 
 def bresenham_line(start, end):
@@ -164,7 +164,12 @@ def update_grid_map(grid, ranges, angles, state, params):
 
     # compute the measured position
     targets = target_cell(state, ranges, angles)
+    print(f"targets[0] (x): {targets[0]}")
+    print(f"targets[1] (y): {targets[1]}")
+
     targets = discretize(targets, params)
+    print(f"targets[0] (u): {targets[0]}")
+    print(f"targets[1] (v): {targets[1]}")
 
     # find the affected cells
     position = discretize(state[:2], params)
