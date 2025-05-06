@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # ----------------------------
     # Useful values
     init_state = np.zeros(shape=(3,1))
-    system_noise_variance = np.diag([0.1, 0.1, 0.1]) # assume zero systems noise variance
+    system_noise_variance = np.diag([0.01, 0.01, 0.01])
     correlation_matrix = np.array([
         [0, -1],
         [-1, 10],
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     # Init the SLAM agent
     slam_agent = SLAM (
-        params=init_params_dict(size=2, resolution=100),
+        params=init_params_dict(size=4, resolution=100),
         n_particles=int(args.n_particles),
         current_state=init_state,
         system_noise_variance=system_noise_variance,
@@ -102,8 +102,6 @@ if __name__ == '__main__':
         # ---------------------------------
         while True: # [Main thread]
             (front, right, back, left, x, y, yaw) = data_queue.get()
-
-            print(f"yaw: {yaw}")
             
             # filter weird values
             if True: # used only for collapsing the code
@@ -140,6 +138,12 @@ if __name__ == '__main__':
                 )
             )
 
+            # Update old values
+            old_x = x
+            old_y = y
+            old_yaw = yaw
+
+            # Visualization
             if k % 5 == 0:
                 plt.clf()
                 slam_map = slam_agent.map
