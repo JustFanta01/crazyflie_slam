@@ -30,14 +30,23 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
 ...
 
 ## Installation
-- download repo
-- pip install packets
+- Download repository with ```git clone https://github.com/JustFanta01/crazyflie_slam.git```
+- Install python packages with ```pip install -r requirements.txt```
 - Crazyflie FreeRTOS task:
-  - download the crazyflie firmware
-  - create a new app
-  - copy the file in the new app
-  - build the firmware
-  - flash the new firmware
+  - Download the crazyflie firmware
+    - ```git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git```
+  - Create a new app
+    - clean the ```app_api/build``` folder and duplicate the folder ```app_api``` and rename it as ```app_slam```
+    - Copy the ```my_app_slam.c``` in the folder ```app_slam/src/```
+    - Modify the ```app_slam/src/Kbuild``` with ```obj-y += my_app_slam.o```
+    - in the ```app_slam``` folder run ```make menuconfig```
+      - App Layer Configuration --> Enable app entry point --> Save & Exit 
+  - Cross-compile the firmware with ```make -j$(nproc)``` inside the the ```app_slam``` folder.
+  - Flash the new firmware over the Crazyflie Radio with ```cfloader flash build/cf2.bin stm32-fw```
+
 - Python CFlib
-  - configure correctly the radio address
+  - Configure correctly the radio address
+
 - Run SLAM algorithm
+  - for the real time version run: ```python real_time_slam.py```
+  - for the async version (CSV file): ```python .py```
