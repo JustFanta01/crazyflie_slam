@@ -28,7 +28,10 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
 
 ## Repository structure
 - ```async/```: it contains the code for separating the data *collection* (csv file) and the data *consumption* for the SLAM algorithm
-- ```crazyslam/```: **it contains the SLAM algorithm implementation**
+- ```crazyslam/```: it contains the SLAM algorithm implementation
+  - ```mapping.py```: 2d occupancy grid map using ToF sensors range inputs
+  - ```localization.py```: state estimate of the Crazyflie using a particle filter
+  - ```slam.py```: SLAM algorithm that combines mapping and localization
 - ```imgs```
 - ```my_app_slam.c```: FreeRTOS task for collecting and sending data over the appchannel
 - ```README.md```: recursive :P
