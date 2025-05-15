@@ -62,7 +62,15 @@ if __name__ == '__main__':
     # ----------------------------
     # Useful values
     init_state = np.zeros(shape=(3,1))
-    system_noise_variance = np.diag([0.01, 0.01, 0.01])
+    # system_noise_variance = np.diag([0.01, 0.01, 0.01])
+    # system_noise_variance = np.diag([0.1, 0.1, 0.1])
+    system_noise_variance = np.diag([0.0, 0.0, 0.0])
+    
+    freq = 10 # sample frequency [Hz]
+    skip = freq
+    size = 1
+    resolution = 100
+    
     correlation_matrix = np.array([
         [0, -1],
         [-1, 10],
@@ -70,7 +78,7 @@ if __name__ == '__main__':
 
     # Init the SLAM agent
     slam_agent = SLAM (
-        params=init_params_dict(size=4, resolution=100),
+        params=init_params_dict(size, resolution),
         n_particles=int(args.n_particles),
         current_state=init_state,
         system_noise_variance=system_noise_variance,
@@ -93,6 +101,8 @@ if __name__ == '__main__':
         scan_angles = np.array([0, 1/2*np.pi, np.pi, 3/2*np.pi]).T
         (old_front, old_right, old_back, old_left, old_x, old_y, old_yaw) = data_queue.get()
         
+        arrow_length = 10
+
         slam_states = []
         k = 0
         fig = plt.figure(figsize=(5,5))
@@ -102,6 +112,8 @@ if __name__ == '__main__':
         # ---------------------------------
         while True: # [Main thread]
             (front, right, back, left, x, y, yaw) = data_queue.get()
+
+            # print(f"yaw: {yaw}")
             
             # filter weird values
             if True: # used only for collapsing the code
@@ -128,7 +140,7 @@ if __name__ == '__main__':
             # prepare data for the SLAM algorithm
             yaw = yaw * np.pi / 180.0 # yaw in rad
             ranges = np.array([front / 1000, right / 1000, back / 1000, left / 1000]) # ranges in meters
-            motion_update = np.array([x - old_x, y-old_y, yaw-old_yaw]) # motion delta
+            motion_update = np.array([x - old_x, y - old_y, yaw - old_yaw]) # motion delta
             
             slam_states.append (
                 slam_agent.update_state (
@@ -144,13 +156,19 @@ if __name__ == '__main__':
             old_yaw = yaw
 
             # Visualization
-            if k % 5 == 0:
+            if k % skip == 0:
                 plt.clf()
                 slam_map = slam_agent.map
 
                 plt.imshow(slam_map, cmap="gray")
                 idx_slam = discretize(slam_states[k][:2], slam_agent.params)
-                plt.plot(idx_slam[1], idx_slam[0], "ro", label="slam")
+                px, py = idx_slam
+                
+                plt.plot(py, px, "ro", label="slam")
+                dx = arrow_length * np.cos(yaw)
+                dy = arrow_length * np.sin(yaw)
+                plt.arrow(py, px, dx, dy, head_width=3, head_length=3, fc='blue', ec='blue')
+
                 plt.title(f"Iterazione #{k}")
                 plt.legend()
                 plt.draw()
