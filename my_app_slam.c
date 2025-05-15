@@ -33,20 +33,12 @@
 #include "app.h"
 #include "app_channel.h"
 
-#define DEBUG_MODULE "MY_APP_SLAM"
+#define DEBUG_MODULE "RANGERDECK"
 #include "debug.h"
 #include "log.h"
 #include "param.h"
-#include "static_mem.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "crtp.h"
-#include "pmw3901.h" // Optical flow deck driver
-#include "deck.h"    // For deck GPIO pin definitions
-
-#define CUSTOM_CTRP_PORT 0x09 // Custom CRTP port for sensor data
-
-#define NCS_PIN DECK_GPIO_IO3
 
 typedef struct
 {
@@ -65,24 +57,13 @@ typedef struct
     uint16_t up;
 } SensorData_t;
 
-
 struct testPacket {
-    char msg[10];
+    // NOTE: src/modules/interface/crtp.h: #define CRTP_MAX_DATA_SIZE 30
+    // char msg[10];
     SensorData_t s_data;
 } __attribute__((packed));
 
 void appMain() {
-    DEBUG_PRINT("Initializing...\n");
-    // Ensure the Flow Deck is initialized
-    if ((pmw3901Init(NCS_PIN) == false)) { 
-        DEBUG_PRINT("Failed to initialize PMW3901\n");
-        vTaskDelete(NULL);
-        return;
-    }
-
-    // TODO: add sanity-check for the MultiRanger Deck
-    
-    DEBUG_PRINT("Initialize finished.\n");
     struct testPacket xPacket;
     SensorData_t sensorData = {0};
 
@@ -98,7 +79,7 @@ void appMain() {
     logVarId_t logIdRangeUp = logGetVarId("range", "up");
 
     while (1) {
-        const char hi_string[10] = "SLAM data";
+        // const char hi_string[10] = "SLAM data";
         
         sensorData.yaw = logGetFloat(logIdStateEstimateYaw);
 
@@ -111,10 +92,10 @@ void appMain() {
         sensorData.right = logGetUint(logIdRangeRight);
         sensorData.up = logGetUint(logIdRangeUp);
 
-        DEBUG_PRINT("front: %u", sensorData.front);
+        // DEBUG_PRINT("front: %u", sensorData.front);
 
         // Serialize the sensor data into the CRTP packet
-        memcpy(xPacket.msg, hi_string, sizeof(hi_string));
+        // memcpy(xPacket.msg, hi_string, sizeof(hi_string));
         memcpy(&xPacket.s_data, &sensorData, sizeof(SensorData_t));
 
         // Send the CRTP packet
