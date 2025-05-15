@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
             # print(f"yaw: {yaw}")
             
-            # filter weird values
+            # filter values
             if True: # used only for collapsing the code
                 if front == 32766 or front == 0:
                     front = old_front

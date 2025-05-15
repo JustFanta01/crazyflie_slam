@@ -14,42 +14,53 @@ parser.add_argument(
     help="Number of particles in the particle filter",
 )
 
+file_path = 'datasets/crazyflie_log_20250515.csv'
 
 if __name__ == '__main__':
     args = parser.parse_args()
+
+    # --------------------------------
+    # |    READ & TRANSFORM DATA     |
+    # -------------------------------- 
     
     # Read CSV file
-    file_path = 'datasets/crazyflie_log_20250515.csv'
     data_frame = pd.read_csv(file_path)
 
-   # Estrai le colonne specifiche
+   # Extract columns and apply the transfromations
     id = data_frame['id']
-    front = data_frame['front'] / 1000
+    front = data_frame['front'] / 1000 # from [mm] to [m]
     right = data_frame['right'] / 1000
     back = data_frame['back'] / 1000
     left = data_frame['left'] / 1000
     x = data_frame['x']
     y = data_frame['y']
-    yaw = data_frame['yaw'] * np.pi / 180.0
+    yaw = data_frame['yaw'] * np.pi / 180.0 # from [deg] to [rad]
+
+    # --------------------------------------
+    # |  PREPARE DATA STRUCTURES for SLAM  |
+    # --------------------------------------
 
     # Create "ranges" that contains front, right, back and left
     ranges = np.array([front, right, back, left])
 
-    # Create "scanangles" that contains 0, 90, 180, 270
+    # Create "scanangles" that contains 0, 90, 180, 270, the four direction of information
     scan_angles = np.array([0, 1/2*np.pi, np.pi, 3/2*np.pi]).T
 
-    # Create "scanangles" that contains x, y and yaw
+    # Create "states" that contains x, y and yaw
     states = np.array([x, y, yaw])
-    # print("states[:, 0:5] (normale)", states[:, 0:5])
+    # print("states[:, 0:5] (normal)", states[:, 0:5])
 
     # Get Delta of the states 
     motion_updates = np.diff(states, axis=1, prepend=np.zeros((3, 1)))
     # print("motion_updates[:, 0:5]", motion_updates[:, 0:5])
 
     states = np.cumsum(motion_updates, axis=1)
-
     # print("states[:, 0:5] (cumsum)", states[:, 0:5])
 
+
+    # --------------------------------
+    # |       CONFIG & INIT          |
+    # --------------------------------
     # Useful values
     system_noise_variance = np.diag([0, 0, 0]) # assume zero systems noise variance
     correlation_matrix = np.array([
@@ -59,7 +70,7 @@ if __name__ == '__main__':
     slam_states = np.zeros_like(states)
 
     # Init the SLAM agent
-    slam_agent = SLAM(
+    slam_agent = SLAM (
         params=init_params_dict(size=1, resolution=100),
         n_particles=int(args.n_particles),
         current_state=states[:, 0],
@@ -72,13 +83,17 @@ if __name__ == '__main__':
     
     # TODO: find a way to intecept CTRL+C on the plot
 
+    # Update the plot every <skip> iteration
     skip = 40
 
     fig = plt.figure(figsize=(7,7))
     (old_front, old_right, old_back, old_left) = ranges[:, 0]
     
+    # --------------------------------
+    # |           MAIN LOOP          |
+    # --------------------------------
     for t in range(states.shape[1]):
-        # filter weird values
+        # filter values
         if True: # used only for collapsing the code
             # 32766 / 1000 --> ~32
 
@@ -119,6 +134,10 @@ if __name__ == '__main__':
             motion_updates[:, t], # un lista di delta nelle posizioni
         )
 
+
+        # --------------------------------
+        # |           PLOT               |
+        # --------------------------------
         if t % skip == 0:
             plt.clf()
             slam_map = slam_agent.map

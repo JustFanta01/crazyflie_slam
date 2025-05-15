@@ -7,11 +7,14 @@ from cflib.crtp import init_drivers
 from cflib.utils.callbacks import Caller
 import csv
 
+# --------------------------------
+# |          CONFIG              |
+# --------------------------------
 # URI of the Crazyflie (update this based on your setup)
 uri = 'radio://0/83/2M/E7E7E7E7EA'
 
 # filename
-log_file = f"crazyflie_log_{datetime.today().strftime('%Y-%m-%d')}.csv"
+log_file = f"datasets/crazyflie_log_{datetime.today().strftime('%Y%m%d_%H%M')}.csv"
 
 # header logfile
 header = ['id', 'front', 'right', 'back', 'left', 'x', 'y', 'yaw']
@@ -28,9 +31,9 @@ def log_data(data):
         writer = csv.writer(file)
         writer.writerow(data)
 
-# Custom CRTP port (matches the firmware port)
-CUSTOM_CTRP_PORT = 0x09
-
+# --------------------------------
+# |          HANDLER             |
+# --------------------------------
 def custom_sensor_data_handler(packet):
     """
     Callback to handle incoming CRTP packets from the Crazyflie.
@@ -68,6 +71,9 @@ def custom_sensor_data_handler(packet):
         print(f"Raw packet: {packet}")
 
 
+# --------------------------------
+# |           MAIN               |
+# --------------------------------
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
 
@@ -85,6 +91,7 @@ if __name__ == '__main__':
     # - List of callbacks available can be found here: https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/user-guides/python_api/#callbacks
     # - The crazyflie class already a appchannel instance, so we can directly use it to register the callback.
 
+    # register the callback
     cf.appchannel.packet_received.add_callback(custom_sensor_data_handler)
 
     # Creating the log file and writing the header
