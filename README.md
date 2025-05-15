@@ -27,7 +27,14 @@ The structure of our code is the described in the following image.
 As we can see we have a FreeRTOS task added in the Crazyflie firmware that iteratively collect the useful data and then send it over the appchannel to the corresponding endpoint that uses Python-CFlib to read the packet. Furthermore we have the SLAM algorithm that continuously comsumes the received data and updates the model.
 
 ## Repository structure
-...
+- ```async/```: it contains the code for separating the data *collection* (csv file) and the data *consumption* for the SLAM algorithm
+- ```crazyslam/```: **it contains the SLAM algorithm implementation**
+- ```imgs```
+- ```my_app_slam.c```: FreeRTOS task for collecting and sending data over the appchannel
+- ```README.md```: recursive :P
+- ```real_time_slam.py```: **real-time version of the SLAM algorithm**, the CFlib "packet_received" callback adds data in a queue and the Main Thread consumes them and run the SLAM algorithm.
+- ```requirements.txt```: required python packages
+
 
 ## Installation
 - Download repository with ```git clone https://github.com/JustFanta01/crazyflie_slam.git```

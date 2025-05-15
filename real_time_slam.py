@@ -15,8 +15,6 @@ from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crtp import init_drivers
 from cflib.utils.callbacks import Caller
 
-CUSTOM_CTRP_PORT = 0x09
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--n_particles",
