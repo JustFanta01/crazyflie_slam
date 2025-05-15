@@ -1,19 +1,17 @@
 import logging
 import struct
+from datetime import datetime
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crtp import init_drivers
 from cflib.utils.callbacks import Caller
-
 import csv
 
 # URI of the Crazyflie (update this based on your setup)
 uri = 'radio://0/83/2M/E7E7E7E7EA'
 
-# "Optical Flow Data\x00\x00\x00\x00\x00"\xa1\xff\x1f"
-
 # filename
-log_file = 'crazyflie_log.csv'
+log_file = f"crazyflie_log_{datetime.today().strftime('%Y-%m-%d')}.csv"
 
 # header logfile
 header = ['id', 'front', 'right', 'back', 'left', 'x', 'y', 'yaw']
@@ -63,7 +61,8 @@ def custom_sensor_data_handler(packet):
         # print(f"Message: {msg_decoded}")
         # print(f"Received - deltaX: {deltaX}, deltaY: {deltaY}, squal: {squal}, shutter: {shutter}")
 
-        print(f"Received - yaw: {yaw}, front: {front}, x: {x}")
+        # print(f"Received - yaw: {yaw}, front: {front}, x: {x}")
+        print(f"Received - front: {front}")
     else:
         print(f"Received unknown packet: {packet.decode('utf-8', errors='ignore')}")
         print(f"Raw packet: {packet}")
