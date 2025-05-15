@@ -41,12 +41,11 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
 
 ## Installation
 - Download repository with ```git clone https://github.com/JustFanta01/crazyflie_slam.git```
-- 
 - Crazyflie FreeRTOS task:
   - Download the crazyflie firmware
     - ```git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git```
   - Create a new app
-    - if present, clean the folder ```examples/app_hello_world/build``` and duplicate the folder ```examples/app_hello_world``` and rename it as ```examples/app_slam```
+    - if present, clean the folder ```examples/app_hello_world/build```, duplicate the folder ```examples/app_hello_world``` and rename it as ```examples/app_slam```
     - Copy the ```my_app_slam.c``` in the folder ```examples/app_slam/src/```
     - Modify the ```app_slam/src/Kbuild``` with ```obj-y += my_app_slam.o```
     - in the ```examples/app_slam``` folder run ```make menuconfig```
@@ -59,12 +58,11 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
     - ```python –m venv cps```
     - ```source cps/bin/activate```
   - Install the required python packages with ```pip install -r requirements.txt```
-  - Configure correctly the radio address
+  - Configure correctly the radio address in the code
 
 - Run SLAM algorithm
   - for the real time SLAM run: ```python real_time_slam.py```
   - for the async version (CSV file):
     - enter the ```async``` folder
-    - to create a new csv file logging in real-time the crazyflie data use: ```python slam_logging_appchannel.py```
-      - otherwise, check the ```async/datasets``` for examples.
+    - to create a new csv file logging in real-time the crazyflie data use: ```python slam_logging_appchannel.py```. Otherwise, check the ```async/datasets``` for examples.
     - to run asynchronously the SLAM algorithm: ```python sim_slam_csv.py```
