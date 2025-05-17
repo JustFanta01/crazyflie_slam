@@ -60,8 +60,8 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
   - Install the required python packages with ```pip install -r requirements.txt```
   - Configure correctly the radio address in the code
 
-- Run SLAM algorithm
-  - for the real time SLAM run: ```python real_time_slam.py```
+## Run SLAM algorithm
+  - for the real-time SLAM run: ```python real_time_slam.py```
   - for the async version (CSV file):
     - enter the ```async``` folder
     - to create a new csv file logging in real-time the crazyflie data use: ```python slam_logging_appchannel.py```. Otherwise, check the ```async/datasets``` for examples.

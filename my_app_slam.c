@@ -33,7 +33,7 @@
 #include "app.h"
 #include "app_channel.h"
 
-#define DEBUG_MODULE "RANGERDECK"
+#define DEBUG_MODULE "MY_APP_SLAM"
 #include "debug.h"
 #include "log.h"
 #include "param.h"
@@ -58,7 +58,7 @@ typedef struct
 } SensorData_t;
 
 struct testPacket {
-    // NOTE: src/modules/interface/crtp.h: #define CRTP_MAX_DATA_SIZE 30
+    // NOTE: in the `src/modules/interface/crtp.h` the max CRTP data is defined as: CRTP_MAX_DATA_SIZE=30
     // char msg[10];
     SensorData_t s_data;
 } __attribute__((packed));
