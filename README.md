@@ -33,6 +33,7 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
   - ```localization.py```: state estimate of the Crazyflie using a particle filter
   - ```slam.py```: SLAM algorithm that combines mapping and localization
 - ```imgs```
+- ```crazyflie_slam.pdf```: presentazione
 - ```my_app_slam.c```: FreeRTOS task for collecting and sending data over the appchannel
 - ```README.md```: recursive :P
 - ```real_time_slam.py```: **real-time version of the SLAM algorithm**, the CFlib "packet_received" callback adds data in a queue and the Main Thread consumes them and run the SLAM algorithm.
