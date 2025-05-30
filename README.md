@@ -1,7 +1,7 @@
 # crazyflie_slam
 **crazyflie_slam** implements a real-time SLAM algorithm for the Crazyflie nanodrone that relies on the FlowDeck for the state estimate and on the RangerDeck for obstacle information.
 
-## SLAM
+## **SLAM**
 SLAM, which stands for Simultaneous Localization and Mapping, refers to a set of algorithms used in robotics and computer vision that enable a device (such as a robot or drone) to create a map of an unknown environment while simultaneously keeping track of its own location within that environment.
 
 For the Crazyflie there were two main questions to answere before starting.
@@ -16,17 +16,19 @@ There are two independent choices, resulting in four possible configurations:
 
 We have opted for the last configuration.
 
+## **References**
 We searched for some algorithms that do implement the SLAM task using the available data, i.e. state estimate and four distances.
-
 The main resource used is https://github.com/khazit/CrazySLAM
 
+
+## **Architecture**
 The structure of our code is the described in the following image.
 
 ![architecture](./imgs/architecture.jpg)
 
 As we can see we have a FreeRTOS task added in the Crazyflie firmware that iteratively collect the useful data and then send it over the appchannel to the corresponding endpoint that uses Python-CFlib to read the packet. Furthermore we have the SLAM algorithm that continuously comsumes the received data and updates the model.
 
-## Repository structure
+## **Repository structure**
 - ```async/```: it contains the code for separating the data *collection* (csv file) and the data *consumption* for the SLAM algorithm
 - ```crazyslam/```: it contains the SLAM algorithm implementation
   - ```mapping.py```: 2d occupancy grid map using ToF sensors range inputs
@@ -40,7 +42,7 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
 - ```requirements.txt```: required python packages
 
 
-## Installation
+## **Installation**
 - Download repository with ```git clone https://github.com/JustFanta01/crazyflie_slam.git```
 - Crazyflie FreeRTOS task:
   - Download the crazyflie firmware
@@ -61,9 +63,19 @@ As we can see we have a FreeRTOS task added in the Crazyflie firmware that itera
   - Install the required python packages with ```pip install -r requirements.txt```
   - Configure correctly the radio address in the code
 
-## Run SLAM algorithm
+## **Run SLAM algorithm**
   - for the real-time SLAM run: ```python real_time_slam.py```
   - for the async version (CSV file):
     - enter the ```async``` folder
     - to create a new csv file logging in real-time the crazyflie data use: ```python slam_logging_appchannel.py```. Otherwise, check the ```async/datasets``` for examples.
     - to run asynchronously the SLAM algorithm: ```python sim_slam_csv.py```
+
+
+## **Contribution**
+The project was completed cooperatively by all four team members, with everyone participating in all aspects.
+
+### <span style="color:lightgreen;"> CrazyTeam: </span>
+- Luca Fantini​
+- Simone Rambelli​​
+- Alex Vandi​​
+- Pierfrancesco Vazzano​
